@@ -26,8 +26,6 @@ namespace AdventOfCode.Archive
 
                 var intersection = wire1.Intersect(wire2);
 
-                var reference = new Point(0, 0);
-
                 var distances = intersection.Select(u => wire1.IndexOf(u) + 1 + wire2.IndexOf(u) + 1);
                 Console.WriteLine(distances.OrderBy(u => u).First());
 

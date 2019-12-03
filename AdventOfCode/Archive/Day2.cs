@@ -11,7 +11,6 @@ namespace AdventOfCode.Archive
         static void Run()
         {
             const string path = @"../../../Inputs/day2.txt";
-            var inputs = new List<int>();
             int[] array;
 
             using (var stream = new StreamReader(path))
