@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace AdventOfCode
 {
@@ -7,22 +8,33 @@ namespace AdventOfCode
         private readonly int[] Rom;
         public int[] Ram { get; private set; }
         public int Ptr { get; private set; }
+        public int Register { get; private set; }
+        public Queue<int> Buffer { get; private set; }
+        public bool IsRunning { get; private set; }
 
         public IntCode(int[] array)
         {
             this.Ram = (int[])array.Clone();
             this.Rom = (int[])array.Clone();
-            Ptr = 0;
+            this.Ptr = 0;
+            this.Register = 0;
+            this.Buffer = new Queue<int>();
+            this.IsRunning = false;
         }
 
         public void Reset()
         {
             Ram = (int[])Rom.Clone();
+            Buffer.Clear();
             Ptr = 0;
+            Register = 0;
+            IsRunning = false;
         }
 
         public void RunIntcode()
         {
+            IsRunning = true;
+
             while (Ram[Ptr] != 99)
             {
                 var opcode = Ram[Ptr] % 100;
@@ -43,15 +55,25 @@ namespace AdventOfCode
 
                     // ReadInput
                     case 3:
-                        var line = Console.ReadLine();
-                        if (int.TryParse(line, out var nb))
-                            Ram[Ram[Ptr + 1]] = nb;
-                        Ptr += 2;
+                        if (Buffer.Count > 0)
+                        {
+                            InjectInput(Buffer.Dequeue());
+                        }
+                        else
+                        {
+                            //var line = Console.ReadLine();
+                            //if (int.TryParse(line, out var nb))
+                            //    Ram[Ram[Ptr + 1]] = nb;
+                            //Ptr += 2;
+
+                            return;
+                        }
                         break;
 
                     // WriteOutput
                     case 4:
-                        Console.WriteLine(GetParameter(1));
+                        Register = GetParameter(1);
+                        //Console.WriteLine(Register);
                         Ptr += 2;
                         break;
 
@@ -93,6 +115,8 @@ namespace AdventOfCode
                         return;
                 }
             }
+
+            IsRunning = false;
         }
 
         public int GetParameter(int index)
@@ -104,6 +128,17 @@ namespace AdventOfCode
                 return Ram[Ptr + index];
 
             return Ram[Ram[Ptr + index]];
+        }
+
+        public void PushToBuffer(int input)
+        {
+            Buffer.Enqueue(input);
+        }
+
+        private void InjectInput(int input)
+        {
+            Ram[Ram[Ptr + 1]] = input;
+            Ptr += 2;
         }
     }
 }
