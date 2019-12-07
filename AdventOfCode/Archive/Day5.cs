@@ -16,8 +16,8 @@ namespace AdventOfCode.Archive
                 array = line.Split(",").Select(u => int.Parse(u)).ToArray();
             }
 
-            IntCode computer = new IntCode();
-            computer.RunIntcode(array);
+            IntCode computer = new IntCode(array);
+            computer.RunIntcode();
         }
     }
 }
