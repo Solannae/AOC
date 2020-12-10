@@ -34,6 +34,8 @@ namespace AdventOfCode_2020.Archive
                 }
 
                 var query = "shiny gold";
+
+                // 1st Half
                 var compatible = 0;
 
                 foreach (var node in nodes)
@@ -42,7 +44,11 @@ namespace AdventOfCode_2020.Archive
                         ++compatible;
                 }
 
-                Console.WriteLine($"Amount of bags compatible with the color {query}: {compatible}.");
+                // 2nd Half
+                var nodeToCheck = nodes.First(u => u.Name == query);
+                var nestedBags = CountNestedBags(nodeToCheck);
+
+                Console.WriteLine($"Amount of bags contained in {query}: {nestedBags}.");
             }
         }
 
@@ -94,6 +100,7 @@ namespace AdventOfCode_2020.Archive
             Console.Write(").\n");
         }
 
+        //1st half
         private static bool CheckNestedBags(Node node, string query, int depth = 0)
         {
             if (node.Name == query)
@@ -108,6 +115,19 @@ namespace AdventOfCode_2020.Archive
             }
 
             return found;
+        }
+
+        //2nd half
+        private static int CountNestedBags(Node node, int depth = 0)
+        {
+            var sum = (depth == 0 ? 0 : 1);
+
+            foreach (var childrenNode in node.LinkedNodes)
+            {
+                sum += childrenNode.Item2 * CountNestedBags(childrenNode.Item1, depth + 1);
+            }
+
+            return sum;
         }
     }
 }
